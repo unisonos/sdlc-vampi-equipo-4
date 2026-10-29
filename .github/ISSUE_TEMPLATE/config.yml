@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Guía del laboratorio
+    url: https://ic8071-sdlc-2026s2.github.io/sdlc-guia/
+    about: Instrucciones de cada fase, herramientas y preguntas frecuentes.

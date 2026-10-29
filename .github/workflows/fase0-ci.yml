@@ -1,0 +1,37 @@
+# Fase 0: primer pipeline en verde. Construye la imagen de la app y verifica que responde.
+# En la fase 3 este archivo se endurece: permisos mínimos y actions fijadas por hash.
+name: Fase 0 · CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  construir-y-probar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Construir la imagen de la app
+        uses: docker/build-push-action@v7
+        with:
+          context: app
+          load: true
+          tags: lab-app:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Levantar la app y esperar a que responda
+        run: bash lab/app.sh iniciar lab-app:ci
+
+      - name: Prueba de humo
+        run: bash lab/app.sh humo
+
+      - name: Bitácora de la app
+        if: always()
+        run: bash lab/app.sh logs

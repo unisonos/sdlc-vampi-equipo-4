@@ -1,0 +1,57 @@
+# Fase 5: copie este archivo a .github/workflows/fase5-release.yml y escriba cada paso.
+# Aquí el pipeline deja de solo reportar: el gate bloquea el release.
+# Se dispara al empujar una etiqueta v* (git tag v1.0.0 && git push origin v1.0.0).
+name: Fase 5 · Release firmado
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write       # crear el GitHub Release
+      packages: write       # publicar la imagen en ghcr.io
+      id-token: write       # firma sin llaves con Sigstore
+      attestations: write   # attestations de procedencia y de SBOM
+    steps:
+      - uses: actions/checkout@v7
+
+      # 1. Inicie sesión en ghcr.io con docker/login-action y el GITHUB_TOKEN.
+
+      # 2. Calcule nombre y etiquetas con docker/metadata-action (images: ghcr.io/${{ github.repository }}).
+      #    El nombre debe ir en minúsculas: metadata-action lo resuelve por usted.
+
+      # 3. Construya y publique la imagen desde app/ con docker/build-push-action.
+      #    Guarde el digest: steps.<id>.outputs.digest
+
+      # 4. Gate de vulnerabilidades: escanee la imagen con aquasecurity/trivy-action,
+      #    severity: HIGH,CRITICAL, exit-code: "1", trivyignores: seguridad/fase-5/.trivyignore.yaml,
+      #    version: v0.76.1 (sin esto la action instala una versión anterior de Trivy).
+      #    Cada excepción de la línea base lleva statement con su justificación.
+      #    Si la imagen base trae cientos de CVE del sistema operativo, la corrección es cambiar a una
+      #    base slim o distroless en app/Dockerfile, no llenar la línea base. ignore-unfixed: true
+      #    deja fuera las que todavía no tienen parche; justifique en la presentación si lo usa.
+
+      # 5. Genere el SBOM CycloneDX con Trivy (format: cyclonedx, output: sbom.cdx.json).
+
+      # 6. Gate de correcciones: levante la imagen publicada con bash lab/app.sh iniciar <imagen>
+      #    y corra pytest -m corregida. Las pruebas de las debilidades que corrigieron deben pasar.
+
+      # 7. Firme la imagen por digest con cosign (sigstore/cosign-installer y cosign sign --yes).
+      #    La action instala por omisión la versión de cosign que trae fijada; use cosign-release para otra.
+
+      # 8. Atestigüe la procedencia con actions/attest-build-provenance y el SBOM con
+      #    actions/attest-sbom, ambos con push-to-registry: true.
+
+      # 9. Verifique lo que publicó:
+      #      gh attestation verify oci://<imagen>@<digest> -R ${{ github.repository }}
+      #      cosign verify <imagen>@<digest> --certificate-identity-regexp ... --certificate-oidc-issuer ...
+
+      # 10. Cree el GitHub Release con gh release create, adjunte sbom.cdx.json y escriba
+      #     en las notas la línea «Imagen: ghcr.io/...@sha256:...». El checkpoint lee ese digest.

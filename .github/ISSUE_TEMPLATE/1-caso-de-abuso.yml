@@ -1,0 +1,72 @@
+name: Caso de abuso
+description: Un escenario en el que alguien usa la app en contra de sus dueños o de sus usuarios (fase 1).
+title: "[Abuso] "
+labels: ["caso-de-abuso"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Escriba desde el punto de vista de quien ataca. Saque la idea de una carta de OWASP Cornucopia (https://copi.owasp.org) y aterrícela en esta app. Ejemplo completo en `seguridad/fase-1/README.md`.
+  - type: input
+    id: actor
+    attributes:
+      label: Actor malicioso
+      description: Quién ataca y qué acceso tiene antes de empezar.
+      placeholder: Cliente registrado, sin privilegios de administración
+    validations:
+      required: true
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo del atacante
+      placeholder: Leer las direcciones de entrega de otros clientes.
+    validations:
+      required: true
+  - type: dropdown
+    id: categoria
+    attributes:
+      label: Categoría
+      options:
+        - S · Suplantación
+        - T · Manipulación
+        - R · Repudio
+        - I · Divulgación de información
+        - D · Denegación de servicio
+        - E · Elevación de privilegios
+        - Cadena de suministro
+        - Configuración
+    validations:
+      required: true
+  - type: input
+    id: carta
+    attributes:
+      label: Carta de Cornucopia
+      description: Palo y valor de la carta que inspiró el caso, por ejemplo AZ3 o VE10.
+    validations:
+      required: true
+  - type: textarea
+    id: escenario
+    attributes:
+      label: Escenario (Dado, Cuando, Entonces)
+      description: Una línea por palabra clave. «Entonces» describe lo que logra el atacante si la app es vulnerable.
+      value: |
+        Dado
+        Cuando
+        Entonces
+    validations:
+      required: true
+  - type: input
+    id: componente
+    attributes:
+      label: Componente afectado
+      placeholder: GET /api/pedidos/{id}
+  - type: input
+    id: cwe
+    attributes:
+      label: CWE
+      placeholder: CWE-639
+  - type: input
+    id: requerimientos
+    attributes:
+      label: Requerimientos que lo mitigan
+      description: Números de los issues de requerimiento, por ejemplo #12, #13. Puede editarlo después de crear los requerimientos.

@@ -1,0 +1,76 @@
+name: Requerimiento de seguridad
+description: Un requerimiento verificable tomado de OWASP ASVS 5.0, nivel 1 (o nivel 2 si la debilidad no tiene uno de nivel 1).
+title: "[Req] "
+labels: ["requerimiento"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Busque el requerimiento en OWASP ASVS 5.0 (https://github.com/OWASP/ASVS/tree/master/5.0/en) y escríbalo para esta app. Prefiera nivel 1. Algunas debilidades solo tienen requerimientos desde nivel 2: bitácoras de seguridad (V16), límite de peticiones, cookies HttpOnly, gestión de secretos y aleatoriedad de tokens. En esos casos use el de nivel 2. Un buen requerimiento se puede verificar con una herramienta o una prueba.
+  - type: input
+    id: identificador
+    attributes:
+      label: Identificador ASVS 5.0
+      description: Capítulo, sección y número, por ejemplo 6.3.1.
+      placeholder: 6.3.1
+    validations:
+      required: true
+  - type: dropdown
+    id: capitulo
+    attributes:
+      label: Capítulo ASVS
+      options:
+        - V1 · Codificación y sanitización
+        - V2 · Validación y lógica de negocio
+        - V3 · Seguridad del frontend web
+        - V4 · API y servicios web
+        - V5 · Manejo de archivos
+        - V6 · Autenticación
+        - V7 · Gestión de sesiones
+        - V8 · Autorización
+        - V9 · Tokens autocontenidos
+        - V10 · OAuth y OIDC
+        - V11 · Criptografía
+        - V12 · Comunicación segura
+        - V13 · Configuración
+        - V14 · Protección de datos
+        - V15 · Codificación y arquitectura seguras
+        - V16 · Bitácoras de seguridad y manejo de errores
+        - V17 · WebRTC
+    validations:
+      required: true
+  - type: textarea
+    id: enunciado
+    attributes:
+      label: Requerimiento
+      placeholder: La app debe bloquear temporalmente una cuenta después de 5 intentos fallidos de inicio de sesión en 15 minutos.
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación (Dado, Cuando, Entonces)
+      description: «Entonces» describe el comportamiento seguro esperado.
+      value: |
+        Dado
+        Cuando
+        Entonces
+    validations:
+      required: true
+  - type: input
+    id: casos
+    attributes:
+      label: Casos de abuso que mitiga
+      placeholder: "#3, #5"
+    validations:
+      required: true
+  - type: checkboxes
+    id: verificacion
+    attributes:
+      label: Cómo se verificará
+      options:
+        - label: Regla propia de Semgrep (fase 3)
+        - label: Prueba pytest escrita desde el caso de abuso (fase 4)
+        - label: Escaneo de ZAP (fase 4)
+        - label: Gate del release (fase 5)
+        - label: Revisión manual

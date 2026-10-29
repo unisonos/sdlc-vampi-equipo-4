@@ -1,0 +1,87 @@
+name: Hallazgo
+description: Una debilidad que encontró una herramienta, una prueba o el equipo rojo (fases 3 a 5).
+title: "[Hallazgo] "
+labels: ["hallazgo"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de correr cada herramienta, el equipo anota qué cree que va a encontrar. Después compara. Esa predicción va en este issue.
+  - type: dropdown
+    id: herramienta
+    attributes:
+      label: Herramienta
+      options:
+        - Semgrep
+        - Gitleaks
+        - Dependabot o Dependency Review
+        - ZAP
+        - Trivy
+        - Prueba pytest
+        - Revisión manual
+        - Equipo rojo
+    validations:
+      required: true
+  - type: textarea
+    id: prediccion
+    attributes:
+      label: Predicción antes de correr la herramienta
+      description: Qué esperaban encontrar y por qué. Si no hubo predicción, dígalo.
+    validations:
+      required: true
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del hallazgo
+      description: Qué reportó la herramienta y qué significa en esta app.
+    validations:
+      required: true
+  - type: input
+    id: ubicacion
+    attributes:
+      label: Ubicación
+      description: archivo:línea, endpoint o paquete y versión.
+      placeholder: app/routes/login.ts:34
+    validations:
+      required: true
+  - type: input
+    id: cwe
+    attributes:
+      label: CWE
+      placeholder: CWE-89
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad
+      options:
+        - Crítica
+        - Alta
+        - Media
+        - Baja
+        - Informativa
+    validations:
+      required: true
+  - type: input
+    id: trazabilidad
+    attributes:
+      label: Trazabilidad (casos de abuso o requerimientos)
+      description: Números de issue relacionados, por ejemplo #4, #11. Un hallazgo sin traza no suma.
+      placeholder: "#4, #11"
+    validations:
+      required: true
+  - type: dropdown
+    id: decision
+    attributes:
+      label: Decisión
+      options:
+        - Pendiente de analizar
+        - Corregir
+        - Aceptar el riesgo con justificación
+        - Falso positivo
+    validations:
+      required: true
+  - type: textarea
+    id: justificacion
+    attributes:
+      label: Justificación
+      description: Por qué esa decisión. Si corrigen, enlacen el PR.

@@ -1,0 +1,41 @@
+# Fase 3: copie este archivo a .github/workflows/scorecard.yml.
+# OpenSSF Scorecard califica las prácticas de seguridad del repositorio.
+# Con publish_results: true el workflow debe quedar así de simple: solo actions
+# aprobadas y permisos de solo lectura en el nivel superior.
+name: Scorecard
+
+on:
+  branch_protection_rule:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 7 * * 1"
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  analisis:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ossf/scorecard-action@v2.5.0
+        with:
+          results_file: resultados.sarif
+          results_format: sarif
+          publish_results: true
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: reporte-scorecard
+          path: resultados.sarif
+
+      - uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: resultados.sarif

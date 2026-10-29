@@ -1,0 +1,78 @@
+# Fase 3: copie este archivo a .github/workflows/fase3-seguridad-pr.yml y complete los TODO.
+# En esta fase el pipeline solo reporta: ningún hallazgo detiene el PR.
+# Excepción: si la prueba de su regla propia de Semgrep falla, el job falla.
+name: Fase 3 · Seguridad en PR
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# TODO (endurecimiento): declare "permissions: {}" aquí y dé a cada job solo lo que necesita.
+
+jobs:
+  sast:
+    name: SAST con Semgrep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Semgrep CE
+        run: pip install semgrep==1.182.0
+
+      - name: Probar las reglas propias
+        run: semgrep --test seguridad/fase-3/semgrep
+
+      - name: Escanear app/ con p/default y las reglas propias
+        run: |
+          mkdir -p reportes
+          semgrep scan app --config p/default --config seguridad/fase-3/semgrep \
+            --metrics off --sarif --output reportes/semgrep.sarif
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: reporte-semgrep
+          path: reportes/
+
+      # TODO (opcional): suba reportes/semgrep.sarif a Code scanning con
+      # github/codeql-action/upload-sarif. Necesita el permiso security-events: write.
+
+  secretos:
+    name: Secretos con Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Buscar secretos en todo el historial
+        run: |
+          mkdir -p reportes
+          # TODO: ejecute la imagen ghcr.io/gitleaks/gitleaks:v8.30.1 con el subcomando «git»
+          # sobre el repositorio montado en /repo. Guarde el reporte SARIF en reportes/gitleaks.sarif,
+          # use --redact para no copiar el secreto al reporte y --exit-code 0 para que solo reporte.
+          # Pista: dentro del contenedor git desconfía de un repositorio de otro dueño;
+          # pase -u "$(id -u):$(id -g)" a docker run.
+          echo "Gitleaks pendiente" > reportes/gitleaks.txt
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: reporte-gitleaks
+          path: reportes/
+
+  dependencias:
+    name: Dependencias nuevas con Dependency Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # TODO: agregue actions/dependency-review-action@v5 con fail-on-severity: high
+      # y warn-only: true (en la fase 3 solo reporta; en la fase 5 quite warn-only).

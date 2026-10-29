@@ -1,0 +1,77 @@
+# Infraestructura del laboratorio: no lo modifique.
+# Evalúa los checkpoints, desbloquea el issue de la fase siguiente y publica
+# el reporte del equipo en GitHub Pages. Sirve de modelo de workflow endurecido:
+# permisos mínimos por job y actions fijadas por hash.
+name: Checkpoints
+
+on:
+  push:
+    branches: [main]
+  issues:
+    types: [opened, edited, closed, reopened]
+  workflow_run:
+    workflows:
+      - "Fase 0 · CI"
+      - "Fase 3 · Seguridad en PR"
+      - "Fase 4 · DAST y pruebas de abuso"
+      - "Fase 5 · Release firmado"
+      - "Scorecard"
+    types: [completed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: checkpoints
+  cancel-in-progress: true
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Reunir los reportes más recientes de cada fase
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for wf in fase3-seguridad-pr fase4-dast fase5-release; do
+            id=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$wf.yml" --status success \
+                 --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null || true)
+            if [ -n "$id" ]; then
+              gh run download "$id" --repo "$GITHUB_REPOSITORY" --dir "_site/reportes/$wf" || true
+            fi
+          done
+
+      - name: Evaluar checkpoints y desbloquear la fase siguiente
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 lab/checkpoints.py --desbloquear --sitio _site
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+
+  publicar:
+    needs: evaluar
+    runs-on: ubuntu-latest
+    # Si Pages todavía no está activado, el reporte no se publica pero el checkpoint sí corre.
+    continue-on-error: true
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.desplegar.outputs.page_url }}
+    steps:
+      - id: desplegar
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

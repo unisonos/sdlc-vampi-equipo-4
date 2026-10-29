@@ -1,0 +1,8 @@
+# Línea base del gate de la fase 5.
+# El gate bloquea toda vulnerabilidad alta o crítica que no esté en esta lista.
+# Cada excepción necesita statement: por qué se acepta y qué issue de hallazgo la respalda.
+# El checkpoint f5.lineabase cuenta las excepciones sin statement.
+vulnerabilities:
+#  - id: CVE-2024-00000
+#    statement: "Solo se usa en pruebas y no se ejecuta en producción. Hallazgo #23."
+#    expired_at: 2026-12-31
