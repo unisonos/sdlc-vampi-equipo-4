@@ -1,13 +1,13 @@
 # Equipo
 
-Una fila por integrante. El usuario de GitHub va sin espacios; el checkpoint de la fase 0 lo lee de esta tabla. Los roles rotan por sesión: nadie repite rol. En el equipo de 5, la quinta persona de cada sesión toma Relatoría.
+Una fila por integrante. El usuario de GitHub va sin espacios; el checkpoint de la fase 0 lo lee de esta tabla. Los roles rotan por sesión: nadie repite rol.
 
 | Nombre | Usuario de GitHub | Sesión 2 (fases 1 y 2) | Sesión 3 (fase 3) | Sesión 4 (fase 4) | Sesión 5 (fase 5) |
 |:---|:---|:---|:---|:---|:---|
-| Nombre Apellido | usuario | Arquitectura | AppSec | DevSecOps | Equipo rojo |
-| Nombre Apellido | usuario | AppSec | DevSecOps | Equipo rojo | Arquitectura |
-| Nombre Apellido | usuario | DevSecOps | Equipo rojo | Arquitectura | AppSec |
-| Nombre Apellido | usuario | Equipo rojo | Arquitectura | AppSec | DevSecOps |
+| Alejandro Jimenez | unisonos | Arquitectura | Equipo rojo | DevSecOps | AppSec |
+| Franco Bustios | fbustios | AppSec | Arquitectura | Equipo rojo | DevSecOps |
+| Sebastian Castillo | elguegue | DevSecOps | AppSec | Arquitectura | Equipo rojo |
+| vacio | username | Equipo rojo | DevSecOps | AppSec | Arquitectura |
 
 ## Roles
 
