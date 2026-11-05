@@ -50,7 +50,17 @@ iniciar() {
     ${APP_COMANDO[@]+"${APP_COMANDO[@]}"} >/dev/null
   esperar
   if [ -n "${APP_RUTA_INICIAL:-}" ]; then
-    curl -fsS -o /dev/null "$URL$APP_RUTA_INICIAL"
+    # VAmPI crea su base en esta ruta con títulos de libro al azar. Si dos se repiten responde 500: se reintenta.
+    local intento
+    for intento in 1 2 3 4 5; do
+      curl -fsS -o /dev/null "$URL$APP_RUTA_INICIAL" 2>/dev/null && break
+      if [ "$intento" = 5 ]; then
+        docker logs --tail 40 "$CONTENEDOR" || true
+        echo "La ruta inicial $APP_RUTA_INICIAL falló 5 veces." >&2
+        return 1
+      fi
+      sleep 3
+    done
   fi
   echo "$APP_NOMBRE lista en $URL"
 }
